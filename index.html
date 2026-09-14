@@ -318,58 +318,6 @@
             font-size: 1rem;
         }
 
-        /* Booking Section - INTEGRATED */
-        .booking-section {
-            background: var(--grey-light);
-            color: var(--black);
-            padding: 6% 0 8% 0;
-            text-align: center;
-        }
-
-        .booking-section h2 {
-            color: var(--black);
-            margin-bottom: 1rem;
-            padding: 0 4%;
-        }
-
-        .booking-section p {
-            font-size: 1.125rem;
-            color: var(--grey-dark);
-            margin-bottom: 3rem;
-            max-width: 600px;
-            margin-left: auto;
-            margin-right: auto;
-            padding: 0 4%;
-        }
-
-        .booking-iframe-container {
-            max-width: 100%;
-            margin: 0 auto;
-        }
-
-        .booking-iframe-wrapper {
-            position: relative;
-            width: 100%;
-            background: transparent;
-            overflow: hidden;
-        }
-
-        .booking-iframe {
-            width: 100%;
-            height: 900px;
-            border: none;
-            display: block;
-            background: var(--white);
-        }
-
-        .booking-loader {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            color: var(--grey-mid);
-            font-size: 1rem;
-        }
 
         /* Location Section */
         .location-grid {
@@ -388,6 +336,99 @@
         .location-item p {
             color: var(--grey-dark);
             line-height: 1.8;
+        }
+
+        /* Booking Modal */
+        .booking-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 10000;
+            overflow: hidden;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .booking-modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content {
+            position: relative;
+            width: 95%;
+            max-width: 1400px;
+            height: 90vh;
+            background: var(--white);
+            border-radius: 4px;
+            overflow: hidden;
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            width: 48px;
+            height: 48px;
+            background: rgba(0, 0, 0, 0.8);
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            z-index: 10001;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+
+        .modal-close:hover {
+            background: var(--black);
+            transform: rotate(90deg);
+        }
+
+        .modal-close::before,
+        .modal-close::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 2px;
+            background: var(--white);
+        }
+
+        .modal-close::before {
+            transform: rotate(45deg);
+        }
+
+        .modal-close::after {
+            transform: rotate(-45deg);
+        }
+
+        .modal-iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            display: block;
         }
 
         /* Final CTA */
@@ -473,9 +514,6 @@
                 grid-template-columns: 1fr;
             }
 
-            .booking-iframe {
-                height: 800px;
-            }
         }
 
         @media (max-width: 640px) {
@@ -492,10 +530,6 @@
             .filter-btn {
                 font-size: 0.75rem;
             }
-
-            .booking-iframe {
-                height: 700px;
-            }
         }
     </style>
 </head>
@@ -507,14 +541,13 @@
             <span></span>
             <span></span>
         </button>
-        <a href="#booking" class="login-btn">Book Now</a>
+        <a href="#properties" class="login-btn">Book Now</a>
     </nav>
 
     <!-- Mobile Menu -->
     <div class="mobile-menu" id="mobileMenu">
         <a href="#properties">Properties</a>
         <a href="#service">Our Service</a>
-        <a href="#booking">Book Now</a>
         <a href="#location">Location</a>
     </div>
 
@@ -526,7 +559,7 @@
             <div class="hero-content">
                 <h1>PRIVATE STAYS<br>AROUND TROGIR</h1>
                 <p class="hero-tagline">8 properties. One personal approach.</p>
-                <a href="#booking" class="btn-primary">Check Availability</a>
+                <a href="#properties" class="btn-primary">Check Availability</a>
             </div>
 
             <div class="hero-location mono">TROGIR</div>
@@ -553,67 +586,67 @@
         </div>
 
         <div class="properties-grid">
-            <div class="property-card" data-location="trogir">
+            <div class="property-card" data-location="seget" data-booking-url="https://neo.cultbooking.com/CPC/?agentcode=58078&hotelcode=135874">
                 <div class="property-image">
                     <span class="property-number mono">01</span>
                 </div>
-                <h3 class="property-name">Villa Trogir Waterfront</h3>
-                <p class="property-location mono">Trogir Old Town</p>
-            </div>
-
-            <div class="property-card" data-location="ciovo">
-                <div class="property-image">
-                    <span class="property-number mono">02</span>
-                </div>
-                <h3 class="property-name">Čiovo Beachside Retreat</h3>
-                <p class="property-location mono">Čiovo Island</p>
-            </div>
-
-            <div class="property-card" data-location="okrug">
-                <div class="property-image">
-                    <span class="property-number mono">03</span>
-                </div>
-                <h3 class="property-name">Okrug Modern Villa</h3>
-                <p class="property-location mono">Okrug Gornji</p>
-            </div>
-
-            <div class="property-card" data-location="trogir">
-                <div class="property-image">
-                    <span class="property-number mono">04</span>
-                </div>
-                <h3 class="property-name">Historic Trogir House</h3>
-                <p class="property-location mono">Trogir</p>
-            </div>
-
-            <div class="property-card" data-location="seget">
-                <div class="property-image">
-                    <span class="property-number mono">05</span>
-                </div>
-                <h3 class="property-name">Seget Coastal Apartment</h3>
+                <h3 class="property-name">Casa della Cava</h3>
                 <p class="property-location mono">Seget Donji</p>
             </div>
 
-            <div class="property-card" data-location="ciovo">
+            <div class="property-card" data-location="trogir" data-booking-url="https://neo.cultbooking.com/CPC/?agentcode=58078&hotelcode=136384">
                 <div class="property-image">
-                    <span class="property-number mono">06</span>
+                    <span class="property-number mono">02</span>
                 </div>
-                <h3 class="property-name">Čiovo Sunset Villa</h3>
-                <p class="property-location mono">Čiovo Island</p>
-            </div>
-
-            <div class="property-card" data-location="trogir">
-                <div class="property-image">
-                    <span class="property-number mono">07</span>
-                </div>
-                <h3 class="property-name">Trogir Marina Apartment</h3>
+                <h3 class="property-name">Villa Ivana Poljica</h3>
                 <p class="property-location mono">Trogir</p>
             </div>
 
-            <div class="property-card" data-location="okrug">
+            <div class="property-card" data-location="ciovo" data-booking-url="https://neo.cultbooking.com/CPC/?agentcode=58078&hotelcode=136464">
+                <div class="property-image">
+                    <span class="property-number mono">03</span>
+                </div>
+                <h3 class="property-name">House Natura</h3>
+                <p class="property-location mono">Čiovo Island</p>
+            </div>
+
+            <div class="property-card" data-location="trogir" data-booking-url="https://neo.cultbooking.com/CPC/?agentcode=58078&hotelcode=136466">
+                <div class="property-image">
+                    <span class="property-number mono">04</span>
+                </div>
+                <h3 class="property-name">City Villa</h3>
+                <p class="property-location mono">Trogir Old Town</p>
+            </div>
+
+            <div class="property-card" data-location="trogir" data-booking-url="https://neo.cultbooking.com/CPC/?agentcode=58078&hotelcode=136468">
+                <div class="property-image">
+                    <span class="property-number mono">05</span>
+                </div>
+                <h3 class="property-name">Stone House Marina</h3>
+                <p class="property-location mono">Trogir Marina</p>
+            </div>
+
+            <div class="property-card" data-location="ciovo" data-booking-url="https://neo.cultbooking.com/CPC/?agentcode=58078&hotelcode=136470">
+                <div class="property-image">
+                    <span class="property-number mono">06</span>
+                </div>
+                <h3 class="property-name">Sunset Residences</h3>
+                <p class="property-location mono">Čiovo Island</p>
+            </div>
+
+            <div class="property-card" data-location="okrug" data-booking-url="https://neo.cultbooking.com/CPC/?agentcode=58078&hotelcode=136472">
+                <div class="property-image">
+                    <span class="property-number mono">07</span>
+                </div>
+                <h3 class="property-name">Orange Apartment</h3>
+                <p class="property-location mono">Okrug Gornji</p>
+            </div>
+
+            <div class="property-card" data-location="okrug" data-booking-url="https://neo.cultbooking.com/CPC/?agentcode=58078&hotelcode=136474">
                 <div class="property-image">
                     <span class="property-number mono">08</span>
                 </div>
-                <h3 class="property-name">Okrug Sea View House</h3>
+                <h3 class="property-name">Adriatic Blue</h3>
                 <p class="property-location mono">Okrug Gornji</p>
             </div>
         </div>
@@ -653,23 +686,6 @@
         </p>
     </section>
 
-    <!-- Booking Section - EMBEDDED -->
-    <section class="booking-section" id="booking">
-        <h2>Find Your Stay</h2>
-        <p>Choose your dates and discover the available properties.</p>
-
-        <div class="booking-iframe-container">
-            <div class="booking-iframe-wrapper">
-                <iframe
-                    class="booking-iframe"
-                    src="https://neo.cultbooking.com/CPC/?agentcode=58078&hotelcode=136144&propertygroup=true&lang=en&token=Yc5aXd1MicXl0Wp7XAtMhIdU"
-                    title="Book Your Stay"
-                    loading="lazy"
-                    allow="payment">
-                </iframe>
-            </div>
-        </div>
-    </section>
 
     <!-- Location Section -->
     <section class="section" id="location">
@@ -700,8 +716,16 @@
     <section class="final-cta">
         <h2>Your Stay Starts Here</h2>
         <span class="brand-mark mono">NICOLAS</span>
-        <a href="#booking" class="btn-outline" style="border-color: white; color: white;">Check Availability</a>
+        <a href="#properties" class="btn-outline" style="border-color: white; color: white;">View Properties</a>
     </section>
+
+    <!-- Booking Modal -->
+    <div class="booking-modal" id="bookingModal">
+        <div class="modal-content">
+            <button class="modal-close" id="modalClose" aria-label="Close booking modal"></button>
+            <iframe class="modal-iframe" id="modalIframe" title="Property Booking" allow="payment"></iframe>
+        </div>
+    </div>
 
     <script>
         // Mobile menu toggle
@@ -753,6 +777,50 @@
                     });
                 }
             });
+        });
+
+        // Booking Modal functionality
+        const bookingModal = document.getElementById('bookingModal');
+        const modalIframe = document.getElementById('modalIframe');
+        const modalClose = document.getElementById('modalClose');
+
+        // Open modal when property card is clicked
+        propertyCards.forEach(card => {
+            card.addEventListener('click', () => {
+                const bookingUrl = card.dataset.bookingUrl;
+                if (bookingUrl) {
+                    modalIframe.src = bookingUrl;
+                    bookingModal.classList.add('active');
+                    document.body.style.overflow = 'hidden'; // Prevent background scroll
+                }
+            });
+        });
+
+        // Close modal function
+        function closeModal() {
+            bookingModal.classList.remove('active');
+            document.body.style.overflow = ''; // Restore scroll
+            // Clear iframe src to stop any ongoing processes
+            setTimeout(() => {
+                modalIframe.src = '';
+            }, 300);
+        }
+
+        // Close modal on X button click
+        modalClose.addEventListener('click', closeModal);
+
+        // Close modal when clicking outside the modal content
+        bookingModal.addEventListener('click', (e) => {
+            if (e.target === bookingModal) {
+                closeModal();
+            }
+        });
+
+        // Close modal on Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && bookingModal.classList.contains('active')) {
+                closeModal();
+            }
         });
     </script>
 </body>
