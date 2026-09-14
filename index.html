@@ -340,33 +340,35 @@
             margin-right: auto;
         }
 
-        .booking-cta-container {
-            max-width: 600px;
+        .booking-iframe-container {
+            max-width: 1200px;
             margin: 0 auto;
-            padding: 4rem 2rem;
-            background: rgba(255,255,255,0.05);
-            border: 2px solid rgba(255,255,255,0.1);
-            border-radius: 4px;
+            padding: 0 2rem;
         }
 
-        .booking-cta-container .booking a {
-            display: inline-block;
+        .booking-iframe-wrapper {
+            position: relative;
+            width: 100%;
             background: var(--white);
-            color: var(--black);
-            padding: 2rem 5rem;
-            font-size: 1.25rem;
-            font-weight: 600;
-            letter-spacing: 0.1em;
-            text-transform: uppercase;
-            text-decoration: none;
-            transition: all 0.3s;
-            border: 3px solid var(--white);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
         }
 
-        .booking-cta-container .booking a:hover {
-            background: transparent;
-            color: var(--white);
-            transform: scale(1.05);
+        .booking-iframe {
+            width: 100%;
+            height: 800px;
+            border: none;
+            display: block;
+        }
+
+        .booking-loader {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: var(--grey-mid);
+            font-size: 1rem;
         }
 
         /* Location Section */
@@ -471,9 +473,12 @@
                 grid-template-columns: 1fr;
             }
 
-            .booking-cta-container .booking a {
-                padding: 1.5rem 3rem;
-                font-size: 1rem;
+            .booking-iframe {
+                height: 700px;
+            }
+
+            .booking-iframe-container {
+                padding: 0 1rem;
             }
         }
 
@@ -490,6 +495,10 @@
 
             .filter-btn {
                 font-size: 0.75rem;
+            }
+
+            .booking-iframe {
+                height: 600px;
             }
         }
     </style>
@@ -648,16 +657,20 @@
         </p>
     </section>
 
-    <!-- Booking Section - PROMINENT -->
+    <!-- Booking Section - EMBEDDED -->
     <section class="booking-section" id="booking">
         <h2>Find Your Stay</h2>
         <p>Choose your dates and discover the available properties.</p>
 
-        <div class="booking-cta-container">
-            <div class="booking">
-                <a href="https://neo.cultbooking.com/CPC/?agentcode=58078&hotelcode=136144&propertygroup=true&lang=en&token=Yc5aXd1MicXl0Wp7XAtMhIdU" target="_blank">
-                    Book Now
-                </a>
+        <div class="booking-iframe-container">
+            <div class="booking-iframe-wrapper">
+                <iframe
+                    class="booking-iframe"
+                    src="https://neo.cultbooking.com/CPC/?agentcode=58078&hotelcode=136144&propertygroup=true&lang=en&token=Yc5aXd1MicXl0Wp7XAtMhIdU"
+                    title="Book Your Stay"
+                    loading="lazy"
+                    allow="payment">
+                </iframe>
             </div>
         </div>
     </section>
