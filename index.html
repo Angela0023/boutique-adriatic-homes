@@ -261,9 +261,20 @@
             width: 100%;
             aspect-ratio: 4/3;
             background: var(--grey-light);
+            background-size: cover;
+            background-position: center;
             margin-bottom: 1.5rem;
             position: relative;
             overflow: hidden;
+            transition: opacity 0.8s ease-in-out;
+        }
+
+        .property-image::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.3) 100%);
+            z-index: 1;
         }
 
         .property-number {
@@ -276,6 +287,7 @@
             background: rgba(0,0,0,0.5);
             padding: 0.5rem 1rem;
             backdrop-filter: blur(10px);
+            z-index: 2;
         }
 
         .property-name {
@@ -586,7 +598,7 @@
         </div>
 
         <div class="properties-grid">
-            <div class="property-card" data-location="seget" data-booking-url="https://neo.cultbooking.com/CPC/?agentcode=58078&hotelcode=135874">
+            <div class="property-card" data-location="seget" data-booking-url="https://neo.cultbooking.com/CPC/?agentcode=58078&hotelcode=135874" data-property="casa-della-cava">
                 <div class="property-image">
                     <span class="property-number mono">01</span>
                 </div>
@@ -594,7 +606,7 @@
                 <p class="property-location mono">Seget Donji</p>
             </div>
 
-            <div class="property-card" data-location="trogir" data-booking-url="https://neo.cultbooking.com/CPC/?agentcode=58078&hotelcode=136384">
+            <div class="property-card" data-location="trogir" data-booking-url="https://neo.cultbooking.com/CPC/?agentcode=58078&hotelcode=136384" data-property="villa-ivana-poljica">
                 <div class="property-image">
                     <span class="property-number mono">02</span>
                 </div>
@@ -602,7 +614,7 @@
                 <p class="property-location mono">Trogir</p>
             </div>
 
-            <div class="property-card" data-location="ciovo" data-booking-url="https://neo.cultbooking.com/CPC/?agentcode=58078&hotelcode=136464">
+            <div class="property-card" data-location="ciovo" data-booking-url="https://neo.cultbooking.com/CPC/?agentcode=58078&hotelcode=136464" data-property="house-natura">
                 <div class="property-image">
                     <span class="property-number mono">03</span>
                 </div>
@@ -610,7 +622,7 @@
                 <p class="property-location mono">Čiovo Island</p>
             </div>
 
-            <div class="property-card" data-location="trogir" data-booking-url="https://neo.cultbooking.com/CPC/?agentcode=58078&hotelcode=136466">
+            <div class="property-card" data-location="trogir" data-booking-url="https://neo.cultbooking.com/CPC/?agentcode=58078&hotelcode=136466" data-property="city-villa">
                 <div class="property-image">
                     <span class="property-number mono">04</span>
                 </div>
@@ -618,7 +630,7 @@
                 <p class="property-location mono">Trogir Old Town</p>
             </div>
 
-            <div class="property-card" data-location="trogir" data-booking-url="https://neo.cultbooking.com/CPC/?agentcode=58078&hotelcode=136468">
+            <div class="property-card" data-location="trogir" data-booking-url="https://neo.cultbooking.com/CPC/?agentcode=58078&hotelcode=136468" data-property="stone-house-marina">
                 <div class="property-image">
                     <span class="property-number mono">05</span>
                 </div>
@@ -626,7 +638,7 @@
                 <p class="property-location mono">Trogir Marina</p>
             </div>
 
-            <div class="property-card" data-location="ciovo" data-booking-url="https://neo.cultbooking.com/CPC/?agentcode=58078&hotelcode=136470">
+            <div class="property-card" data-location="ciovo" data-booking-url="https://neo.cultbooking.com/CPC/?agentcode=58078&hotelcode=136470" data-property="sunset-residences">
                 <div class="property-image">
                     <span class="property-number mono">06</span>
                 </div>
@@ -634,7 +646,7 @@
                 <p class="property-location mono">Čiovo Island</p>
             </div>
 
-            <div class="property-card" data-location="okrug" data-booking-url="https://neo.cultbooking.com/CPC/?agentcode=58078&hotelcode=136472">
+            <div class="property-card" data-location="okrug" data-booking-url="https://neo.cultbooking.com/CPC/?agentcode=58078&hotelcode=136472" data-property="orange-apartment">
                 <div class="property-image">
                     <span class="property-number mono">07</span>
                 </div>
@@ -642,7 +654,7 @@
                 <p class="property-location mono">Okrug Gornji</p>
             </div>
 
-            <div class="property-card" data-location="okrug" data-booking-url="https://neo.cultbooking.com/CPC/?agentcode=58078&hotelcode=136474">
+            <div class="property-card" data-location="okrug" data-booking-url="https://neo.cultbooking.com/CPC/?agentcode=58078&hotelcode=136474" data-property="adriatic-blue">
                 <div class="property-image">
                     <span class="property-number mono">08</span>
                 </div>
@@ -821,6 +833,97 @@
             if (e.key === 'Escape' && bookingModal.classList.contains('active')) {
                 closeModal();
             }
+        });
+
+        // Property Image Rotation System
+        const imageRotationIntervals = new Map();
+        const propertyImageData = new Map();
+
+        // Supported image extensions
+        const IMAGE_EXTENSIONS = ['jpg', 'jpeg', 'png', 'webp', 'JPG', 'JPEG', 'PNG', 'WEBP'];
+
+        // Function to load available images for a property
+        async function loadPropertyImages(propertyName) {
+            const images = [];
+            const basePath = `images/properties/${propertyName}`;
+
+            // Try to load a manifest file first (if you create one)
+            try {
+                const response = await fetch(`${basePath}/images.json`);
+                if (response.ok) {
+                    const data = await response.json();
+                    return data.images.map(img => `${basePath}/${img}`);
+                }
+            } catch (e) {
+                // Manifest doesn't exist, try common filenames
+            }
+
+            // Try common image filenames (1.jpg, 2.jpg, etc.)
+            for (let i = 1; i <= 20; i++) {
+                for (const ext of IMAGE_EXTENSIONS) {
+                    const imagePath = `${basePath}/${i}.${ext}`;
+                    try {
+                        const response = await fetch(imagePath, { method: 'HEAD' });
+                        if (response.ok) {
+                            images.push(imagePath);
+                            break; // Found this number, move to next
+                        }
+                    } catch (e) {
+                        // Image doesn't exist, continue
+                    }
+                }
+            }
+
+            return images;
+        }
+
+        // Function to rotate images for a property
+        function rotatePropertyImages(card, propertyName) {
+            const imageElement = card.querySelector('.property-image');
+            const images = propertyImageData.get(propertyName);
+
+            if (!images || images.length === 0) return;
+
+            let currentIndex = 0;
+
+            // Set first image immediately
+            imageElement.style.backgroundImage = `url('${images[0]}')`;
+
+            // Only rotate if there's more than one image
+            if (images.length > 1) {
+                const interval = setInterval(() => {
+                    currentIndex = (currentIndex + 1) % images.length;
+                    imageElement.style.backgroundImage = `url('${images[currentIndex]}')`;
+                }, 4000); // Rotate every 4 seconds
+
+                imageRotationIntervals.set(propertyName, interval);
+            }
+        }
+
+        // Initialize image rotation for all properties
+        async function initializePropertyImages() {
+            const cards = document.querySelectorAll('.property-card[data-property]');
+
+            for (const card of cards) {
+                const propertyName = card.dataset.property;
+                if (!propertyName) continue;
+
+                // Load images for this property
+                const images = await loadPropertyImages(propertyName);
+
+                if (images.length > 0) {
+                    propertyImageData.set(propertyName, images);
+                    rotatePropertyImages(card, propertyName);
+                }
+            }
+        }
+
+        // Start image rotation when page loads
+        window.addEventListener('load', initializePropertyImages);
+
+        // Clean up intervals when page unloads
+        window.addEventListener('beforeunload', () => {
+            imageRotationIntervals.forEach(interval => clearInterval(interval));
         });
     </script>
 </body>
