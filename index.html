@@ -187,9 +187,12 @@
         }
 
         .hero-right {
-            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 1600"><rect fill="%23333" width="1200" height="1600"/></svg>') center/cover;
+            background: var(--grey-dark);
+            background-size: cover;
+            background-position: center;
             position: relative;
             overflow: hidden;
+            transition: opacity 0.8s ease-in-out;
         }
 
         .hero-image-overlay {
@@ -924,6 +927,86 @@
         // Clean up intervals when page unloads
         window.addEventListener('beforeunload', () => {
             imageRotationIntervals.forEach(interval => clearInterval(interval));
+        });
+
+        // Hero Image Rotation System
+        let heroRotationInterval = null;
+        const heroImages = [];
+
+        // Function to load hero images
+        async function loadHeroImages() {
+            const basePath = 'images/hero';
+            const images = [];
+
+            // Try common image filenames
+            for (let i = 1; i <= 20; i++) {
+                for (const ext of IMAGE_EXTENSIONS) {
+                    const imagePath = `${basePath}/${i}.${ext}`;
+                    try {
+                        const response = await fetch(imagePath, { method: 'HEAD' });
+                        if (response.ok) {
+                            images.push(imagePath);
+                            break;
+                        }
+                    } catch (e) {
+                        // Continue checking
+                    }
+                }
+            }
+
+            // Also try to get all files without numbering
+            if (images.length === 0) {
+                // Try loading from manifest or directory listing if available
+                try {
+                    const response = await fetch(`${basePath}/images.json`);
+                    if (response.ok) {
+                        const data = await response.json();
+                        return data.images.map(img => `${basePath}/${img}`);
+                    }
+                } catch (e) {
+                    // No manifest
+                }
+            }
+
+            return images;
+        }
+
+        // Function to rotate hero images
+        function rotateHeroImages() {
+            const heroElement = document.querySelector('.hero-right');
+            if (!heroElement || heroImages.length === 0) return;
+
+            let currentIndex = 0;
+
+            // Set first image immediately
+            heroElement.style.backgroundImage = `url('${heroImages[0]}')`;
+
+            // Only rotate if there's more than one image
+            if (heroImages.length > 1) {
+                heroRotationInterval = setInterval(() => {
+                    currentIndex = (currentIndex + 1) % heroImages.length;
+                    heroElement.style.backgroundImage = `url('${heroImages[currentIndex]}')`;
+                }, 4000); // Rotate every 4 seconds
+            }
+        }
+
+        // Initialize hero images
+        async function initializeHeroImages() {
+            const images = await loadHeroImages();
+            if (images.length > 0) {
+                heroImages.push(...images);
+                rotateHeroImages();
+            }
+        }
+
+        // Start hero image rotation when page loads
+        window.addEventListener('load', initializeHeroImages);
+
+        // Clean up hero interval
+        window.addEventListener('beforeunload', () => {
+            if (heroRotationInterval) {
+                clearInterval(heroRotationInterval);
+            }
         });
     </script>
 </body>

@@ -4,10 +4,17 @@ Your site now supports automatic 4-second image rotation for each property.
 
 ## What You Need to Do Now
 
-### Step 1: Create the Image Folder
-On your **Desktop**, create a folder called:
+### Step 1: Create the Image Folders
+On your **Desktop**, create TWO folders:
+
+**For property images:**
 ```
-Niksa images
+Desktop/Niksa images/
+```
+
+**For hero images (the big image on the home page):**
+```
+Desktop/Niksa Landing page/Main images/
 ```
 
 ### Step 2: Organize Your Images
@@ -25,8 +32,8 @@ Desktop/Niksa images/
 └── Adriatic Blue/
 ```
 
-### Step 3: Add Images
-Put images in each folder and name them **1.jpg, 2.jpg, 3.jpg**, etc.
+### Step 3: Add Property Images
+Put images in each **property folder** and name them **1.jpg, 2.jpg, 3.jpg**, etc.
 
 Example for Casa della Cava:
 ```
@@ -41,6 +48,20 @@ Casa della Cava/
 - ✅ Name them exactly: `1.jpg`, `2.jpg`, `3.jpg` (lowercase, with numbers)
 - ✅ Use `.jpg`, `.png`, or `.webp` format
 - ✅ Each property can have different numbers of images (1-20 supported)
+
+### Step 3b: Add Hero Images
+Put images in the **Main images** folder and name them **1.jpg, 2.jpg, 3.jpg**, etc.
+
+Example:
+```
+Desktop/Niksa Landing page/Main images/
+├── 1.jpg    ← Beautiful Trogir view
+├── 2.jpg    ← Croatian coast
+├── 3.jpg    ← Property exterior
+└── 4.jpg    ← Sunset view
+```
+
+These images will rotate on the home page (the big image on the right side of "PRIVATE STAYS AROUND TROGIR").
 
 ### Step 4: Import Images
 Open Terminal and run:

@@ -4,9 +4,11 @@
 # This script copies images from Desktop/Niksa images into the project
 
 SOURCE_DIR="$HOME/Desktop/Niksa images"
+HERO_SOURCE_DIR="$HOME/Desktop/Niksa Landing page/Main images"
 DEST_DIR="images/properties"
+HERO_DEST_DIR="images/hero"
 
-echo "🖼️  Importing property images..."
+echo "🖼️  Importing images..."
 echo ""
 
 # Check if source directory exists
@@ -66,9 +68,36 @@ for source_name in "${!PROPERTY_MAP[@]}"; do
 done
 
 echo ""
+echo "🏖️  Importing hero images..."
+
+# Import hero images if directory exists
+if [ -d "$HERO_SOURCE_DIR" ]; then
+    # Clear existing hero images
+    rm -f "$HERO_DEST_DIR"/*
+
+    # Copy all image files from Main images folder
+    count=0
+    for img in "$HERO_SOURCE_DIR"/*.{jpg,JPG,jpeg,JPEG,png,PNG,webp,WEBP} 2>/dev/null; do
+        if [ -f "$img" ]; then
+            cp "$img" "$HERO_DEST_DIR/"
+            ((count++))
+        fi
+    done
+
+    if [ $count -gt 0 ]; then
+        echo "   ✅ Copied $count hero image(s)"
+    else
+        echo "   ⚠️  No images found in Main images folder"
+    fi
+else
+    echo "   ⚠️  Hero images folder not found: $HERO_SOURCE_DIR"
+    echo "   Create 'Desktop/Niksa Landing page/Main images' to add hero images"
+fi
+
+echo ""
 echo "✨ Import complete!"
 echo ""
 echo "Next steps:"
 echo "1. Run: git add images/"
-echo "2. Run: git commit -m 'Add property images'"
+echo "2. Run: git commit -m 'Add property and hero images'"
 echo "3. Run: git push"
