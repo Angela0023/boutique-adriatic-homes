@@ -962,28 +962,28 @@
         const propertyIndexes = new Map();
         let globalRotationInterval = null;
 
-        // Supported image extensions
-        const IMAGE_EXTENSIONS = ['jpg', 'jpeg', 'png', 'webp', 'JPG', 'JPEG', 'PNG', 'WEBP'];
+        // Hardcoded image configuration for instant loading
+        const PROPERTY_IMAGE_CONFIG = {
+            'casa-della-cava': { count: 26, ext: 'jpg' },
+            'villa-ivana-poljica': { count: 23, ext: 'jpg' },
+            'house-natura': { count: 51, ext: 'webp' },
+            'city-villa': { count: 28, ext: 'jpeg' },
+            'stone-house-marina': { count: 20, ext: 'jpg' },
+            'sunset-residences': { count: 1, ext: 'jpg' },
+            'orange-apartment': { count: 26, ext: 'webp' },
+            'adriatic-blue': { count: 9, ext: 'jpg' }
+        };
 
-        // Function to load available images for a property
-        async function loadPropertyImages(propertyName) {
+        // Function to get property images instantly (no async checking)
+        function getPropertyImages(propertyName) {
+            const config = PROPERTY_IMAGE_CONFIG[propertyName];
+            if (!config) return [];
+
             const images = [];
             const basePath = `images/properties/${propertyName}`;
 
-            // Try common image filenames (1.jpg, 2.jpg, etc.)
-            for (let i = 1; i <= 60; i++) {
-                for (const ext of IMAGE_EXTENSIONS) {
-                    const imagePath = `${basePath}/${i}.${ext}`;
-                    try {
-                        const response = await fetch(imagePath, { method: 'HEAD' });
-                        if (response.ok) {
-                            images.push(imagePath);
-                            break; // Found this number, move to next
-                        }
-                    } catch (e) {
-                        // Image doesn't exist, continue
-                    }
-                }
+            for (let i = 1; i <= config.count; i++) {
+                images.push(`${basePath}/${i}.${config.ext}`);
             }
 
             return images;
@@ -1032,16 +1032,16 @@
             });
         }
 
-        // Initialize image rotation for all properties
-        async function initializePropertyImages() {
+        // Initialize image rotation for all properties (instant, no async)
+        function initializePropertyImages() {
             const cards = document.querySelectorAll('.property-card[data-property]');
 
-            for (const card of cards) {
+            cards.forEach(card => {
                 const propertyName = card.dataset.property;
-                if (!propertyName) continue;
+                if (!propertyName) return;
 
-                // Load images for this property
-                const images = await loadPropertyImages(propertyName);
+                // Get images instantly (no async checking)
+                const images = getPropertyImages(propertyName);
 
                 if (images.length > 0) {
                     propertyImageData.set(propertyName, images);
@@ -1052,14 +1052,18 @@
                     imageElement.style.backgroundImage = `url('${images[0]}')`;
                     imageElement.classList.add('fade-in');
                 }
-            }
+            });
 
             // Start synchronized rotation (all images change together every 5 seconds)
             globalRotationInterval = setInterval(rotateAllProperties, 5000);
         }
 
-        // Start image rotation when page loads
-        window.addEventListener('load', initializePropertyImages);
+        // Start image rotation immediately when DOM is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initializePropertyImages);
+        } else {
+            initializePropertyImages();
+        }
 
         // Clean up interval when page unloads
         window.addEventListener('beforeunload', () => {
@@ -1070,45 +1074,15 @@
 
         // Hero Image Rotation System
         let heroRotationInterval = null;
-        const heroImages = [];
 
-        // Function to load hero images
-        async function loadHeroImages() {
-            const basePath = 'images/hero';
-            const images = [];
-
-            // Try common image filenames
-            for (let i = 1; i <= 20; i++) {
-                for (const ext of IMAGE_EXTENSIONS) {
-                    const imagePath = `${basePath}/${i}.${ext}`;
-                    try {
-                        const response = await fetch(imagePath, { method: 'HEAD' });
-                        if (response.ok) {
-                            images.push(imagePath);
-                            break;
-                        }
-                    } catch (e) {
-                        // Continue checking
-                    }
-                }
-            }
-
-            // Also try to get all files without numbering
-            if (images.length === 0) {
-                // Try loading from manifest or directory listing if available
-                try {
-                    const response = await fetch(`${basePath}/images.json`);
-                    if (response.ok) {
-                        const data = await response.json();
-                        return data.images.map(img => `${basePath}/${img}`);
-                    }
-                } catch (e) {
-                    // No manifest
-                }
-            }
-
-            return images;
-        }
+        // Hardcoded hero images for instant loading
+        const heroImages = [
+            'images/hero/1.webp',
+            'images/hero/2.jpg',
+            'images/hero/3.jpg',
+            'images/hero/4.png',
+            'images/hero/5.png'
+        ];
 
         // Function to rotate hero images with smooth fade
         function rotateHeroImages() {
@@ -1139,17 +1113,12 @@
             }
         }
 
-        // Initialize hero images
-        async function initializeHeroImages() {
-            const images = await loadHeroImages();
-            if (images.length > 0) {
-                heroImages.push(...images);
-                rotateHeroImages();
-            }
+        // Start hero image rotation immediately when DOM is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', rotateHeroImages);
+        } else {
+            rotateHeroImages();
         }
-
-        // Start hero image rotation when page loads
-        window.addEventListener('load', initializeHeroImages);
 
         // Clean up hero interval
         window.addEventListener('beforeunload', () => {
