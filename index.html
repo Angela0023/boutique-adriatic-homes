@@ -198,7 +198,28 @@
             background-position: center;
             position: relative;
             overflow: hidden;
-            transition: opacity 0.8s ease-in-out;
+        }
+
+        .hero-right::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            transform: translateX(100%);
+            transition: transform 0.6s ease-in-out;
+            z-index: 1;
+        }
+
+        .hero-right[data-next-bg]::after {
+            background-image: var(--next-hero-image);
+        }
+
+        .hero-right.sliding::after {
+            transform: translateX(0);
         }
 
         .hero-image-overlay {
@@ -277,14 +298,45 @@
             overflow: hidden;
         }
 
-        .property-image.fade-out {
-            opacity: 0;
-            transition: opacity 0.5s ease-in-out;
+        .property-image::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            background-image: attr(data-next-bg url);
+            transform: translateX(100%);
+            transition: transform 0.6s ease-in-out;
+            z-index: 2;
         }
 
-        .property-image.fade-in {
-            opacity: 1;
-            transition: opacity 0.5s ease-in-out;
+        .property-image[data-next-bg]::after {
+            background-image: var(--next-image);
+        }
+
+        .property-image.sliding::after {
+            transform: translateX(0);
+        }
+
+        @keyframes slideOut {
+            from {
+                transform: translateX(0);
+            }
+            to {
+                transform: translateX(-100%);
+            }
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+            }
+            to {
+                transform: translateX(0);
+            }
         }
 
         .property-image::before {
@@ -998,25 +1050,29 @@
             return images;
         }
 
-        // Function to change image with smooth fade
+        // Function to change image with smooth slide
         function changePropertyImage(card, propertyName, newIndex) {
             const imageElement = card.querySelector('.property-image');
             const images = propertyImageData.get(propertyName);
 
             if (!images || images.length === 0) return;
 
-            // Fade out
-            imageElement.classList.add('fade-out');
-            imageElement.classList.remove('fade-in');
+            // Set the next image on the ::after pseudo-element
+            imageElement.style.setProperty('--next-image', `url('${images[newIndex]}')`);
 
-            // Change image after fade out completes
+            // Create a temporary after element to show the next image
+            const computedStyle = window.getComputedStyle(imageElement, '::after');
+            imageElement.setAttribute('data-next-bg', images[newIndex]);
+
+            // Trigger slide animation
+            imageElement.classList.add('sliding');
+
+            // After slide completes, swap images and reset
             setTimeout(() => {
                 imageElement.style.backgroundImage = `url('${images[newIndex]}')`;
-
-                // Fade in
-                imageElement.classList.remove('fade-out');
-                imageElement.classList.add('fade-in');
-            }, 500); // Match the CSS transition duration
+                imageElement.classList.remove('sliding');
+                imageElement.removeAttribute('data-next-bg');
+            }, 600); // Match the CSS transition duration
         }
 
         // Synchronized rotation for ALL properties
@@ -1093,7 +1149,7 @@
             'images/hero/5.png'
         ];
 
-        // Function to rotate hero images with smooth fade
+        // Function to rotate hero images with smooth slide
         function rotateHeroImages() {
             const heroElement = document.querySelector('.hero-right');
             if (!heroElement || heroImages.length === 0) return;
@@ -1102,22 +1158,25 @@
 
             // Set first image immediately
             heroElement.style.backgroundImage = `url('${heroImages[0]}')`;
-            heroElement.style.opacity = '1';
 
             // Only rotate if there's more than one image
             if (heroImages.length > 1) {
                 heroRotationInterval = setInterval(() => {
                     currentIndex = (currentIndex + 1) % heroImages.length;
 
-                    // Fade out
-                    heroElement.style.opacity = '0';
+                    // Set next image on ::after pseudo-element
+                    heroElement.style.setProperty('--next-hero-image', `url('${heroImages[currentIndex]}')`);
+                    heroElement.setAttribute('data-next-bg', heroImages[currentIndex]);
 
-                    // Change image after fade out completes
+                    // Trigger slide
+                    heroElement.classList.add('sliding');
+
+                    // After slide completes, swap images and reset
                     setTimeout(() => {
                         heroElement.style.backgroundImage = `url('${heroImages[currentIndex]}')`;
-                        // Fade in
-                        heroElement.style.opacity = '1';
-                    }, 800); // Match the CSS transition duration
+                        heroElement.classList.remove('sliding');
+                        heroElement.removeAttribute('data-next-bg');
+                    }, 600); // Match the CSS transition duration
                 }, 5000); // Rotate every 5 seconds
             }
         }
