@@ -940,6 +940,15 @@
             }, 300);
         }
 
+        // Open modal function (can be called from map or anywhere)
+        window.openBookingModal = function(bookingUrl) {
+            if (bookingUrl) {
+                modalIframe.src = bookingUrl;
+                bookingModal.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            }
+        };
+
         // Close modal on X button click
         modalClose.addEventListener('click', closeModal);
 
@@ -1158,7 +1167,7 @@
                 const marker = L.marker([property.lat, property.lng]).addTo(map);
                 const popupContent = `
                     <div style="text-align: center;">
-                        <a href="${property.url}" target="_blank" style="color: #000; text-decoration: none; font-weight: 600; font-size: 14px;">
+                        <a href="#" onclick="openBookingModal('${property.url}'); return false;" style="color: #000; text-decoration: none; font-weight: 600; font-size: 14px; cursor: pointer;">
                             ${property.name}
                         </a>
                         <br>
