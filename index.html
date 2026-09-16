@@ -275,7 +275,16 @@
             margin-bottom: 1.5rem;
             position: relative;
             overflow: hidden;
-            transition: opacity 0.8s ease-in-out;
+        }
+
+        .property-image.fade-out {
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+        }
+
+        .property-image.fade-in {
+            opacity: 1;
+            transition: opacity 0.5s ease-in-out;
         }
 
         .property-image::before {
@@ -943,9 +952,10 @@
             }
         });
 
-        // Property Image Rotation System
-        const imageRotationIntervals = new Map();
+        // Property Image Rotation System - Synchronized & Smooth
         const propertyImageData = new Map();
+        const propertyIndexes = new Map();
+        let globalRotationInterval = null;
 
         // Supported image extensions
         const IMAGE_EXTENSIONS = ['jpg', 'jpeg', 'png', 'webp', 'JPG', 'JPEG', 'PNG', 'WEBP'];
@@ -955,19 +965,8 @@
             const images = [];
             const basePath = `images/properties/${propertyName}`;
 
-            // Try to load a manifest file first (if you create one)
-            try {
-                const response = await fetch(`${basePath}/images.json`);
-                if (response.ok) {
-                    const data = await response.json();
-                    return data.images.map(img => `${basePath}/${img}`);
-                }
-            } catch (e) {
-                // Manifest doesn't exist, try common filenames
-            }
-
             // Try common image filenames (1.jpg, 2.jpg, etc.)
-            for (let i = 1; i <= 20; i++) {
+            for (let i = 1; i <= 60; i++) {
                 for (const ext of IMAGE_EXTENSIONS) {
                     const imagePath = `${basePath}/${i}.${ext}`;
                     try {
@@ -985,27 +984,47 @@
             return images;
         }
 
-        // Function to rotate images for a property
-        function rotatePropertyImages(card, propertyName) {
+        // Function to change image with smooth fade
+        function changePropertyImage(card, propertyName, newIndex) {
             const imageElement = card.querySelector('.property-image');
             const images = propertyImageData.get(propertyName);
 
             if (!images || images.length === 0) return;
 
-            let currentIndex = 0;
+            // Fade out
+            imageElement.classList.add('fade-out');
+            imageElement.classList.remove('fade-in');
 
-            // Set first image immediately
-            imageElement.style.backgroundImage = `url('${images[0]}')`;
+            // Change image after fade out completes
+            setTimeout(() => {
+                imageElement.style.backgroundImage = `url('${images[newIndex]}')`;
 
-            // Only rotate if there's more than one image
-            if (images.length > 1) {
-                const interval = setInterval(() => {
-                    currentIndex = (currentIndex + 1) % images.length;
-                    imageElement.style.backgroundImage = `url('${images[currentIndex]}')`;
-                }, 4000); // Rotate every 4 seconds
+                // Fade in
+                imageElement.classList.remove('fade-out');
+                imageElement.classList.add('fade-in');
+            }, 500); // Match the CSS transition duration
+        }
 
-                imageRotationIntervals.set(propertyName, interval);
-            }
+        // Synchronized rotation for ALL properties
+        function rotateAllProperties() {
+            const cards = document.querySelectorAll('.property-card[data-property]');
+
+            cards.forEach(card => {
+                const propertyName = card.dataset.property;
+                const images = propertyImageData.get(propertyName);
+
+                if (!images || images.length <= 1) return;
+
+                // Get current index
+                let currentIndex = propertyIndexes.get(propertyName) || 0;
+
+                // Move to next image
+                currentIndex = (currentIndex + 1) % images.length;
+                propertyIndexes.set(propertyName, currentIndex);
+
+                // Change image with fade
+                changePropertyImage(card, propertyName, currentIndex);
+            });
         }
 
         // Initialize image rotation for all properties
@@ -1021,17 +1040,27 @@
 
                 if (images.length > 0) {
                     propertyImageData.set(propertyName, images);
-                    rotatePropertyImages(card, propertyName);
+                    propertyIndexes.set(propertyName, 0);
+
+                    // Set first image immediately
+                    const imageElement = card.querySelector('.property-image');
+                    imageElement.style.backgroundImage = `url('${images[0]}')`;
+                    imageElement.classList.add('fade-in');
                 }
             }
+
+            // Start synchronized rotation (all images change together every 5 seconds)
+            globalRotationInterval = setInterval(rotateAllProperties, 5000);
         }
 
         // Start image rotation when page loads
         window.addEventListener('load', initializePropertyImages);
 
-        // Clean up intervals when page unloads
+        // Clean up interval when page unloads
         window.addEventListener('beforeunload', () => {
-            imageRotationIntervals.forEach(interval => clearInterval(interval));
+            if (globalRotationInterval) {
+                clearInterval(globalRotationInterval);
+            }
         });
 
         // Hero Image Rotation System
@@ -1076,7 +1105,7 @@
             return images;
         }
 
-        // Function to rotate hero images
+        // Function to rotate hero images with smooth fade
         function rotateHeroImages() {
             const heroElement = document.querySelector('.hero-right');
             if (!heroElement || heroImages.length === 0) return;
@@ -1085,13 +1114,23 @@
 
             // Set first image immediately
             heroElement.style.backgroundImage = `url('${heroImages[0]}')`;
+            heroElement.style.opacity = '1';
 
             // Only rotate if there's more than one image
             if (heroImages.length > 1) {
                 heroRotationInterval = setInterval(() => {
                     currentIndex = (currentIndex + 1) % heroImages.length;
-                    heroElement.style.backgroundImage = `url('${heroImages[currentIndex]}')`;
-                }, 4000); // Rotate every 4 seconds
+
+                    // Fade out
+                    heroElement.style.opacity = '0';
+
+                    // Change image after fade out completes
+                    setTimeout(() => {
+                        heroElement.style.backgroundImage = `url('${heroImages[currentIndex]}')`;
+                        // Fade in
+                        heroElement.style.opacity = '1';
+                    }, 800); // Match the CSS transition duration
+                }, 5000); // Rotate every 5 seconds
             }
         }
 
@@ -1128,22 +1167,31 @@
                 attribution: '© OpenStreetMap contributors'
             }).addTo(map);
 
-            // Property locations
+            // Property locations with booking URLs
             const properties = [
-                { name: 'Casa della Cava', location: 'Seget Donji', lat: 43.505, lng: 16.247 },
-                { name: 'Villa Ivana Poljica', location: 'Marina', lat: 43.430, lng: 16.310 },
-                { name: 'House Natura', location: 'Seget Gornji', lat: 43.518, lng: 16.227 },
-                { name: 'City Villa', location: 'Trogir', lat: 43.514, lng: 16.252 },
-                { name: 'Stone House Marina', location: 'Marina', lat: 43.432, lng: 16.312 },
-                { name: 'Sunset Residences', location: 'Okrug Gornji', lat: 43.493, lng: 16.277 },
-                { name: 'Orange Apartment', location: 'Okrug Gornji', lat: 43.491, lng: 16.275 },
-                { name: 'Adriatic Blue', location: 'Okrug Gornji', lat: 43.495, lng: 16.279 }
+                { name: 'Casa della Cava', location: 'Seget Donji', lat: 43.505, lng: 16.247, url: 'https://neo.cultbooking.com/CPC/?agentcode=58078&hotelcode=135874' },
+                { name: 'Villa Ivana Poljica', location: 'Marina', lat: 43.430, lng: 16.310, url: 'https://neo.cultbooking.com/CPC/?agentcode=58078&hotelcode=136384' },
+                { name: 'House Natura', location: 'Seget Gornji', lat: 43.518, lng: 16.227, url: 'https://neo.cultbooking.com/CPC/?agentcode=58078&hotelcode=136389' },
+                { name: 'City Villa', location: 'Trogir', lat: 43.514, lng: 16.252, url: 'https://neo.cultbooking.com/CPC/?agentcode=58078&hotelcode=136386' },
+                { name: 'Stone House Marina', location: 'Marina', lat: 43.432, lng: 16.312, url: 'https://neo.cultbooking.com/CPC/?agentcode=58078&hotelcode=136385' },
+                { name: 'Sunset Residences', location: 'Okrug Gornji', lat: 43.493, lng: 16.277, url: 'https://neo.cultbooking.com/CPC/?agentcode=58078&hotelcode=136472' },
+                { name: 'Orange Apartment', location: 'Okrug Gornji', lat: 43.491, lng: 16.275, url: 'https://neo.cultbooking.com/CPC/?agentcode=58078&hotelcode=136473' },
+                { name: 'Adriatic Blue', location: 'Okrug Gornji', lat: 43.495, lng: 16.279, url: 'https://neo.cultbooking.com/CPC/?agentcode=58078&hotelcode=136474' }
             ];
 
             // Add markers for each property
             properties.forEach(property => {
                 const marker = L.marker([property.lat, property.lng]).addTo(map);
-                marker.bindPopup(`<b>${property.name}</b><br>${property.location}`);
+                const popupContent = `
+                    <div style="text-align: center;">
+                        <a href="${property.url}" target="_blank" style="color: #000; text-decoration: none; font-weight: 600; font-size: 14px;">
+                            ${property.name}
+                        </a>
+                        <br>
+                        <span style="color: #666; font-size: 12px;">${property.location}</span>
+                    </div>
+                `;
+                marker.bindPopup(popupContent);
             });
         }
 
