@@ -4,7 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nicolas — Boutique Adriatic Homes | Private Stays in Trogir, Croatia</title>
-    <meta name="description" content="8 private properties around Trogir, Croatia. One personal approach.">
+    <meta name="description" content="Collection of carefully selected private properties around Trogir, Croatia. One personal approach.">
+
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 
     <style>
         /* Reset & Base */
@@ -353,6 +359,72 @@
             line-height: 1.8;
         }
 
+        /* Contact Section */
+        .contact-section {
+            max-width: 600px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .contact-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .contact-item {
+            padding: 2rem;
+            border: 1px solid #E0E0E0;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .contact-item:hover {
+            border-color: var(--black);
+            transform: translateY(-2px);
+        }
+
+        .contact-item h3 {
+            font-size: 1.125rem;
+            margin-bottom: 1rem;
+            font-weight: 500;
+        }
+
+        .contact-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--black);
+            text-decoration: none;
+            font-size: 1rem;
+            transition: opacity 0.3s;
+        }
+
+        .contact-link:hover {
+            opacity: 0.7;
+        }
+
+        .contact-icon {
+            font-size: 1.5rem;
+        }
+
+        /* Map Container */
+        .map-container {
+            width: 100%;
+            height: 500px;
+            margin-top: 3rem;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        @media (max-width: 768px) {
+            .map-container {
+                height: 400px;
+            }
+        }
+
         /* Booking Modal */
         .booking-modal {
             display: none;
@@ -564,6 +636,7 @@
         <a href="#properties">Properties</a>
         <a href="#service">Our Service</a>
         <a href="#location">Location</a>
+        <a href="#contact">Contact</a>
     </div>
 
     <!-- Hero Section -->
@@ -573,7 +646,7 @@
 
             <div class="hero-content">
                 <h1>PRIVATE STAYS<br>AROUND TROGIR</h1>
-                <p class="hero-tagline">8 properties. One personal approach.</p>
+                <p class="hero-tagline">Collection of carefully selected properties</p>
                 <a href="#properties" class="btn-primary">Check Availability</a>
             </div>
 
@@ -723,6 +796,38 @@
             <div class="location-item">
                 <h3>Island Access</h3>
                 <p>Gateway to Čiovo, Drvenik, Šolta, and beyond. Ferry connections to Brač and Hvar. Crystal-clear Adriatic waters.</p>
+            </div>
+        </div>
+
+        <div class="map-container">
+            <div id="map" style="width: 100%; height: 100%;"></div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section class="section" id="contact">
+        <div class="section-header">
+            <span class="section-label mono">Get In Touch</span>
+            <h2>Contact Us</h2>
+        </div>
+
+        <div class="contact-section">
+            <div class="contact-grid">
+                <div class="contact-item">
+                    <h3>WhatsApp</h3>
+                    <a href="https://wa.me/385912506800" class="contact-link" target="_blank" rel="noopener">
+                        <span class="contact-icon">💬</span>
+                        <span>+385 91 250 6800</span>
+                    </a>
+                </div>
+
+                <div class="contact-item">
+                    <h3>Email</h3>
+                    <a href="mailto:boutiqueadriatichomes@gmail.com" class="contact-link">
+                        <span class="contact-icon">✉️</span>
+                        <span>boutiqueadriatichomes@gmail.com</span>
+                    </a>
+                </div>
             </div>
         </div>
     </section>
@@ -1008,6 +1113,42 @@
                 clearInterval(heroRotationInterval);
             }
         });
+
+        // Initialize Map with Property Pins
+        function initializeMap() {
+            const mapElement = document.getElementById('map');
+            if (!mapElement) return;
+
+            // Center map on Trogir area
+            const map = L.map('map').setView([43.505, 16.252], 12);
+
+            // Add OpenStreetMap tiles
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19,
+                attribution: '© OpenStreetMap contributors'
+            }).addTo(map);
+
+            // Property locations
+            const properties = [
+                { name: 'Casa della Cava', location: 'Seget Donji', lat: 43.505, lng: 16.247 },
+                { name: 'Villa Ivana Poljica', location: 'Marina', lat: 43.430, lng: 16.310 },
+                { name: 'House Natura', location: 'Seget Gornji', lat: 43.518, lng: 16.227 },
+                { name: 'City Villa', location: 'Trogir', lat: 43.514, lng: 16.252 },
+                { name: 'Stone House Marina', location: 'Marina', lat: 43.432, lng: 16.312 },
+                { name: 'Sunset Residences', location: 'Okrug Gornji', lat: 43.493, lng: 16.277 },
+                { name: 'Orange Apartment', location: 'Okrug Gornji', lat: 43.491, lng: 16.275 },
+                { name: 'Adriatic Blue', location: 'Okrug Gornji', lat: 43.495, lng: 16.279 }
+            ];
+
+            // Add markers for each property
+            properties.forEach(property => {
+                const marker = L.marker([property.lat, property.lng]).addTo(map);
+                marker.bindPopup(`<b>${property.name}</b><br>${property.location}`);
+            });
+        }
+
+        // Initialize map when page loads
+        window.addEventListener('load', initializeMap);
     </script>
 </body>
 </html>

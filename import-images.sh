@@ -3,8 +3,8 @@
 # Image Import Script for Nicolas - Boutique Adriatic Homes
 # This script copies images from Desktop/Niksa images into the project
 
-SOURCE_DIR="$HOME/Desktop/Niksa images"
-HERO_SOURCE_DIR="$HOME/Desktop/Niksa Landing page/Main images"
+SOURCE_DIR="$HOME/Desktop/Niksa Landing page"
+HERO_SOURCE_DIR="$HOME/Desktop/Niksa Landing page/Main image"
 DEST_DIR="images/properties"
 HERO_DEST_DIR="images/hero"
 
@@ -14,7 +14,7 @@ echo ""
 # Check if source directory exists
 if [ ! -d "$SOURCE_DIR" ]; then
     echo "❌ Source directory not found: $SOURCE_DIR"
-    echo "Please create the folder 'Niksa images' on your Desktop first"
+    echo "Please create the folder 'Niksa Landing page' on your Desktop first"
     exit 1
 fi
 
@@ -50,12 +50,20 @@ for source_name in "${!PROPERTY_MAP[@]}"; do
         # Clear existing images
         rm -f "$dest_path"/*
 
-        # Copy all image files (jpg, jpeg, png, webp)
+        # Copy and rename image files to numbered format (1.jpg, 2.jpg, etc.)
         count=0
-        for img in "$source_path"/*.{jpg,JPG,jpeg,JPEG,png,PNG,webp,WEBP} 2>/dev/null; do
+        for img in "$source_path"/*; do
             if [ -f "$img" ]; then
-                cp "$img" "$dest_path/"
-                ((count++))
+                # Get file extension
+                ext="${img##*.}"
+                ext_lower=$(echo "$ext" | tr '[:upper:]' '[:lower:]')
+
+                # Only process image files
+                if [[ "$ext_lower" == "jpg" || "$ext_lower" == "jpeg" || "$ext_lower" == "png" || "$ext_lower" == "webp" ]]; then
+                    ((count++))
+                    # Copy and rename to numbered format
+                    cp "$img" "$dest_path/$count.$ext_lower"
+                fi
             fi
         done
 
@@ -75,23 +83,31 @@ if [ -d "$HERO_SOURCE_DIR" ]; then
     # Clear existing hero images
     rm -f "$HERO_DEST_DIR"/*
 
-    # Copy all image files from Main images folder
+    # Copy and rename hero images to numbered format
     count=0
-    for img in "$HERO_SOURCE_DIR"/*.{jpg,JPG,jpeg,JPEG,png,PNG,webp,WEBP} 2>/dev/null; do
+    for img in "$HERO_SOURCE_DIR"/*; do
         if [ -f "$img" ]; then
-            cp "$img" "$HERO_DEST_DIR/"
-            ((count++))
+            # Get file extension
+            ext="${img##*.}"
+            ext_lower=$(echo "$ext" | tr '[:upper:]' '[:lower:]')
+
+            # Only process image files
+            if [[ "$ext_lower" == "jpg" || "$ext_lower" == "jpeg" || "$ext_lower" == "png" || "$ext_lower" == "webp" ]]; then
+                ((count++))
+                # Copy and rename to numbered format
+                cp "$img" "$HERO_DEST_DIR/$count.$ext_lower"
+            fi
         fi
     done
 
     if [ $count -gt 0 ]; then
         echo "   ✅ Copied $count hero image(s)"
     else
-        echo "   ⚠️  No images found in Main images folder"
+        echo "   ⚠️  No images found in Main image folder"
     fi
 else
     echo "   ⚠️  Hero images folder not found: $HERO_SOURCE_DIR"
-    echo "   Create 'Desktop/Niksa Landing page/Main images' to add hero images"
+    echo "   Create 'Desktop/Niksa Landing page/Main image' to add hero images"
 fi
 
 echo ""
