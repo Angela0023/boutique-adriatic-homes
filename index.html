@@ -1094,7 +1094,7 @@
                 currentIndex = (currentIndex + 1) % images.length;
                 propertyIndexes.set(propertyName, currentIndex);
                 changePropertyImage(card, propertyName, currentIndex);
-            }, 3000); // Rotate every 3 seconds while hovering
+            }, 1000); // Rotate every 1 second while hovering
 
             propertyIntervals.set(propertyName, interval);
         }
