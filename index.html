@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nicolas — Boutique Adriatic Homes | Private Stays in Trogir, Croatia</title>
-    <meta name="description" content="Collection of carefully selected private properties around Trogir, Croatia. One personal approach.">
+    <title>Nicolas — Trogir Apartments & Villas Rental | Boutique Adriatic Homes</title>
+    <meta name="description" content="Luxury apartments and villas for rent in Trogir, Croatia. Collection of carefully selected private properties around Trogir. Personal service by Nicolas - Boutique Adriatic Homes.">
+    <meta name="keywords" content="Trogir apartments, Trogir villas, vacation rental Trogir, Nicolas Trogir, villa rental Croatia, Trogir accommodation, private villas Trogir, Adriatic homes, Trogir holiday homes">
 
     <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
@@ -1075,26 +1076,51 @@
             }, 600); // Match the CSS transition duration
         }
 
-        // Synchronized rotation for ALL properties
-        function rotateAllProperties() {
-            const cards = document.querySelectorAll('.property-card[data-property]');
+        // Rotation for individual property on hover
+        const propertyIntervals = new Map();
 
-            cards.forEach(card => {
-                const propertyName = card.dataset.property;
-                const images = propertyImageData.get(propertyName);
+        function startPropertyRotation(card, propertyName) {
+            const images = propertyImageData.get(propertyName);
+            if (!images || images.length <= 1) return;
 
-                if (!images || images.length <= 1) return;
+            // Clear any existing interval for this property
+            if (propertyIntervals.has(propertyName)) {
+                clearInterval(propertyIntervals.get(propertyName));
+            }
 
-                // Get current index
+            // Start rotation for this property
+            const interval = setInterval(() => {
                 let currentIndex = propertyIndexes.get(propertyName) || 0;
-
-                // Move to next image
                 currentIndex = (currentIndex + 1) % images.length;
                 propertyIndexes.set(propertyName, currentIndex);
-
-                // Change image with fade
                 changePropertyImage(card, propertyName, currentIndex);
-            });
+            }, 800); // Rotate every 800ms while hovering
+
+            propertyIntervals.set(propertyName, interval);
+        }
+
+        function stopPropertyRotation(card, propertyName) {
+            // Stop the rotation interval
+            if (propertyIntervals.has(propertyName)) {
+                clearInterval(propertyIntervals.get(propertyName));
+                propertyIntervals.delete(propertyName);
+            }
+
+            // Return to first image
+            const images = propertyImageData.get(propertyName);
+            if (images && images.length > 0) {
+                const imageElement = card.querySelector('.property-image');
+                imageElement.style.setProperty('--next-image', `url('${images[0]}')`);
+                imageElement.setAttribute('data-next-bg', images[0]);
+                imageElement.classList.add('sliding');
+
+                setTimeout(() => {
+                    imageElement.style.backgroundImage = `url('${images[0]}')`;
+                    imageElement.classList.remove('sliding');
+                    imageElement.removeAttribute('data-next-bg');
+                    propertyIndexes.set(propertyName, 0);
+                }, 600);
+            }
         }
 
         // Initialize image rotation for all properties (instant, no async)
@@ -1116,11 +1142,17 @@
                     const imageElement = card.querySelector('.property-image');
                     imageElement.style.backgroundImage = `url('${images[0]}')`;
                     imageElement.classList.add('fade-in');
+
+                    // Add hover listeners for rotation
+                    card.addEventListener('mouseenter', () => {
+                        startPropertyRotation(card, propertyName);
+                    });
+
+                    card.addEventListener('mouseleave', () => {
+                        stopPropertyRotation(card, propertyName);
+                    });
                 }
             });
-
-            // Start synchronized rotation (all images change together every 5 seconds)
-            globalRotationInterval = setInterval(rotateAllProperties, 5000);
         }
 
         // Start image rotation immediately when DOM is ready
@@ -1130,11 +1162,10 @@
             initializePropertyImages();
         }
 
-        // Clean up interval when page unloads
+        // Clean up intervals when page unloads
         window.addEventListener('beforeunload', () => {
-            if (globalRotationInterval) {
-                clearInterval(globalRotationInterval);
-            }
+            propertyIntervals.forEach((interval) => clearInterval(interval));
+            propertyIntervals.clear();
         });
 
         // Hero Image Rotation System
@@ -1212,10 +1243,10 @@
             // Property locations with booking URLs
             const properties = [
                 { name: 'Casa della Cava', location: 'Seget Donji', lat: 43.505, lng: 16.247, url: 'https://neo.cultbooking.com/CPC/?agentcode=58078&hotelcode=135874' },
-                { name: 'Villa Ivana Poljica', location: 'Marina', lat: 43.430, lng: 16.310, url: 'https://neo.cultbooking.com/CPC/?agentcode=58078&hotelcode=136384' },
+                { name: 'Villa Ivana Poljica', location: 'Marina', lat: 43.421, lng: 16.088, url: 'https://neo.cultbooking.com/CPC/?agentcode=58078&hotelcode=136384' },
                 { name: 'House Natura', location: 'Seget Gornji', lat: 43.518, lng: 16.227, url: 'https://neo.cultbooking.com/CPC/?agentcode=58078&hotelcode=136389' },
                 { name: 'City Villa', location: 'Trogir', lat: 43.514, lng: 16.252, url: 'https://neo.cultbooking.com/CPC/?agentcode=58078&hotelcode=136386' },
-                { name: 'Stone House Marina', location: 'Marina', lat: 43.432, lng: 16.312, url: 'https://neo.cultbooking.com/CPC/?agentcode=58078&hotelcode=136385' },
+                { name: 'Stone House Marina', location: 'Marina', lat: 43.421, lng: 16.088, url: 'https://neo.cultbooking.com/CPC/?agentcode=58078&hotelcode=136385' },
                 { name: 'Sunset Residences', location: 'Okrug Gornji', lat: 43.493, lng: 16.277, url: 'https://neo.cultbooking.com/CPC/?agentcode=58078&hotelcode=136472' },
                 { name: 'Orange Apartment', location: 'Okrug Gornji', lat: 43.491, lng: 16.275, url: 'https://neo.cultbooking.com/CPC/?agentcode=58078&hotelcode=136473' },
                 { name: 'Adriatic Blue', location: 'Okrug Gornji', lat: 43.495, lng: 16.279, url: 'https://neo.cultbooking.com/CPC/?agentcode=58078&hotelcode=136474' }
