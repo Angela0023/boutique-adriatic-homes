@@ -1024,31 +1024,25 @@
         const propertyIndexes = new Map();
         let globalRotationInterval = null;
 
-        // Hardcoded image configuration for instant loading
-        const PROPERTY_IMAGE_CONFIG = {
-            'casa-della-cava': { count: 26, ext: 'jpg' },
-            'villa-ivana-poljica': { count: 23, ext: 'jpg' },
-            'house-natura': { count: 51, ext: 'webp' },
-            'city-villa': { count: 28, ext: 'jpeg' },
-            'stone-house-marina': { count: 20, ext: 'jpg' },
-            'sunset-residences': { count: 21, ext: 'jpg' },
-            'orange-apartment': { count: 26, ext: 'webp' },
-            'adriatic-blue': { count: 9, ext: 'jpg' }
+        // Hardcoded image lists for instant loading
+        const PROPERTY_IMAGES = {
+            'casa-della-cava': ["1.jpg","2.jpg","3.jpg","4.jpg","5.jpg","6.jpg","7.jpg","8.jpg","9.jpg","10.jpg","11.jpg","12.jpg","13.jpg","14.jpg","15.jpg","16.jpg","17.jpg","18.jpg","19.jpg","20.jpg","21.jpg","22.jpg","23.jpg","24.jpg","25.jpg","26.jpg"],
+            'villa-ivana-poljica': ["1.jpg","2.jpg","3.jpg","4.jpg","5.jpg","6.jpg","7.jpg","8.jpg","9.jpg","10.jpg","11.jpg","12.jpg","13.jpg","14.jpg","15.jpg","16.jpg","17.jpg","18.jpg","19.jpg","20.jpg","21.jpg","22.jpg","23.jpg"],
+            'house-natura': ["1.jpg","BY3A9815.webp","BY3A9819.webp","BY3A9824.webp","BY3A9831.webp","BY3A9845-Edit.webp","BY3A9855-HDR.webp","BY3A9867-HDR.webp","BY3A9869-HDR.webp","BY3A9873-HDR.webp","BY3A9919-HDR.webp","BY3A9923.webp","BY3A9924.webp","BY3A9948-HDR.webp","BY3A9958-HDR.webp","BY3A9970-HDR.webp","BY3A9994-HDR.webp","DJI_20240428151818_0046_D.webp","DJI_20240428152035_0055_Dpin.webp","House-Natura-3080x2040-4.webp","House-Natura-3080x2040-6.webp","House-Natura-3080x2040-6 (1).webp","House-Natura-3080x2040-8.webp","House-Natura-3080x2040-11.webp","House-Natura-3080x2040-12.webp","House-Natura-3080x2040-13.webp","House-Natura-3080x2040-14.webp","House-Natura-3080x2040-16.webp","House-Natura-3080x2040-19.webp","House-Natura-3080x2040-23.webp","House-Natura-3080x2040-24.webp","House-Natura-3080x2040-26.webp","House-Natura-3080x2040-27.webp","House-Natura-3080x2040-28.webp","House-Natura-3080x2040-29.webp","House-Natura-3080x2040-30.webp","House-Natura-3080x2040-31.webp","House-Natura-3080x2040-32.webp","House-Natura-3080x2040-33.webp","House-Natura-3080x2040-35.webp","House-Natura-3080x2040-36.webp","House-Natura-3080x2040-37.webp","House-Natura-3080x2040-38.webp","House-Natura-3080x2040-39.webp","House-Natura-3080x2040-46.webp","House-Natura-3080x2040-47.webp","House-Natura-3080x2040-48.webp","House-Natura-3080x2040-49.webp","House-Natura-3080x2040-50.webp","House-Natura-3080x2040-51.webp","House-Natura-3080x2040-52.webp","House-Natura-3080x2040-53.webp"],
+            'city-villa': ["1.jpeg","08c02568-cf81-406c-add8-2aca60c32f3c.jpeg","09bf5c37-e90d-43e6-9223-4fb87997773b.jpeg","0b1568ec-5aca-4d03-b123-58593be1aef7.jpeg","275c03ba-d656-4fd2-818c-afd87982eef4.jpeg","2850fb11-7243-4735-b2e7-8bcc3950aeb4.jpeg","343a2e49-140c-4a20-99bb-5f17749a542c.jpeg","38892465-3423-434a-bfa0-f4a468961039.jpeg","391c353e-c8de-4b3f-ae02-f307ca96fbaa.jpeg","40e446e3-263f-44e7-92cf-3ff071fff414.jpeg","459892e3-8f0d-43a4-86e7-f88a4f6756a4.jpeg","5625952f-fa61-4254-9df5-b4c9d86179e0.jpeg","5f11a84f-8c63-4d50-bba2-5fccd81e2c28.jpeg","74a92545-f14f-418e-aef3-5e568f3ab753.jpeg","865c1871-571a-4f18-ab9b-0fff1319d57d.jpeg","867ca842-b882-43d2-98d7-7481a195e8a3.jpeg","916fdbfa-f4ee-45e7-a444-ace7711cf688.jpeg","9cf8969b-1672-424f-961c-0d9ec1bc5f16.jpeg","ac928fca-4ee9-46f2-89a8-7206122a8652.jpeg","c2364874-7383-44f3-b259-807e41de543d.jpeg","d4df03b7-d200-4e47-a9a1-40b5de7e3a5f.jpeg","d5c6388e-7c89-443d-8e6b-0c09831b215e.jpeg","def1eced-665d-42d2-87d6-a6ff9fc2c390.jpeg","e3c47a56-5414-4e37-98ce-9658cf575484.jpeg","e9983cf4-08ef-4a90-9ce5-0173b9913df0.jpeg","efbd1604-c5d8-423c-9f7b-6b080a9f0555.jpeg","f8d3f0f3-fe23-4f1a-8c3b-f28be3b2fc8a.jpeg","fc38b6ec-dc75-4d41-8444-026d8af93ca8.jpeg"],
+            'stone-house-marina': ["1.webp","80274554.jpg","80274557.jpg","82747389.jpg","82753315.jpg","473485793.jpg","IMG_8285.jpg","IMG_8334.jpg","IMG_8579.jpg","IMG_8587.jpg","IMG_8594.jpg","IMG_9302.jpg","IMG_9307.jpg","IMG_9413 (1).jpg","IMG_9446.jpg","IMG_9458.jpg","IMG_9462.jpg","IMG_9465.jpg","IMG_9466.jpg","naslovnica.jpg","rostilj.jpg"],
+            'sunset-residences': ["1.jpg","301294721.jpg","323185362.jpg","323185363.jpg","323185370.jpg","323185371.jpg","323185372.jpg","323185378.jpg","323185381.jpg","323185384.jpg","323185386.jpg","323185391.jpg","323185393.jpg","323185396.jpg","323185401.jpg","323185402.jpg","323185404.jpg","323185406.jpg","323185407.jpg","323185410.jpg","323185415.jpg","323185419.jpg"],
+            'orange-apartment': ["1.webp","DJI_0005.webp","EP2_2890.webp","EP2_2900.webp","EP2_2904.webp","EP2_2914.webp","EP2_2930.webp","EP2_2946.webp","EP2_2969.webp","EP2_2989.webp","EP2_3037.webp","EP2_3041.webp","EP2_3043.webp","EP2_3049.webp","EP2_3056.webp","EP2_3069.webp","EP2_3115.webp","EP2_3160.webp","EP2_3167.webp","EP2_3280.webp","EP2_3333.webp","EP2_3406.webp","EP2_3445-1.webp","EP2_3458.webp","EP2_3482.webp","EP2_3505-1.webp"],
+            'adriatic-blue': ["1.jpg","340208183.jpg","340208196.jpg","340208205.jpg","340208206.jpg","340208209.jpg","340208212.jpg","340208225.jpg","340208239.jpg","ChatGPT_Image_Nov_19_2025_03_43_11_PM.jpg"]
         };
 
         // Function to get property images instantly (no async checking)
         function getPropertyImages(propertyName) {
-            const config = PROPERTY_IMAGE_CONFIG[propertyName];
-            if (!config) return [];
+            const imageList = PROPERTY_IMAGES[propertyName];
+            if (!imageList) return [];
 
-            const images = [];
             const basePath = `images/properties/${propertyName}`;
-
-            for (let i = 1; i <= config.count; i++) {
-                images.push(`${basePath}/${i}.${config.ext}`);
-            }
-
-            return images;
+            return imageList.map(img => `${basePath}/${img}`);
         }
 
         // Function to change image with smooth slide
