@@ -243,7 +243,7 @@
     <div class="booking-hero">
         <div>
             <span class="mono">Luxury Coastal Stays</span>
-            <h1>BOUTIQUE ADRIATIC<br>HOMES</h1>
+            <h1>NICOLAS<br>HOMES COLLECTION</h1>
         </div>
     </div>
 
@@ -255,6 +255,17 @@
         </div>
 
         <form class="booking-form" id="instagramBookingForm">
+            <div class="form-group">
+                <label class="form-label" for="location">Location</label>
+                <select class="form-select" id="location" name="location">
+                    <option value="">All locations</option>
+                    <option value="seget">Seget</option>
+                    <option value="marina">Marina</option>
+                    <option value="trogir">Trogir</option>
+                    <option value="okrug">Okrug Gornji</option>
+                </select>
+            </div>
+
             <div class="form-group">
                 <label class="form-label" for="property">Property</label>
                 <select class="form-select" id="property" name="property" required>
@@ -308,6 +319,46 @@
             const currentCheckout = document.getElementById('checkout').value;
             if (currentCheckout && currentCheckout <= this.value) {
                 document.getElementById('checkout').value = '';
+            }
+        });
+
+        // Filter properties by location
+        document.getElementById('location').addEventListener('change', function() {
+            const selectedLocation = this.value.toLowerCase();
+            const propertySelect = document.getElementById('property');
+            const options = propertySelect.querySelectorAll('option');
+
+            options.forEach(option => {
+                if (option.value === '') {
+                    option.style.display = 'block';
+                    return;
+                }
+
+                const optionLocation = option.getAttribute('data-location');
+
+                if (!selectedLocation || optionLocation === selectedLocation) {
+                    option.style.display = 'block';
+                } else {
+                    option.style.display = 'none';
+                }
+            });
+
+            // Reset property selection if current property is filtered out
+            const currentProperty = propertySelect.value;
+            if (currentProperty) {
+                const currentOption = propertySelect.querySelector(`option[value="${currentProperty}"]`);
+                if (currentOption && currentOption.style.display === 'none') {
+                    propertySelect.value = '';
+                }
+            }
+        });
+
+        // Auto-update location when property is selected
+        document.getElementById('property').addEventListener('change', function() {
+            const selectedOption = this.options[this.selectedIndex];
+            if (selectedOption.value) {
+                const propertyLocation = selectedOption.getAttribute('data-location');
+                document.getElementById('location').value = propertyLocation;
             }
         });
 
