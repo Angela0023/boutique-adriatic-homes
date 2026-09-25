@@ -161,6 +161,7 @@
             text-transform: uppercase;
             transition: all 0.3s;
             border: 2px solid var(--black);
+            border-radius: 50px;
         }
 
         .btn-primary:hover {
@@ -423,14 +424,14 @@
 
         /* Contact Section */
         .contact-section {
-            max-width: 600px;
+            max-width: 1000px;
             margin: 0 auto;
             text-align: center;
         }
 
         .contact-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            grid-template-columns: repeat(3, 1fr);
             gap: 2rem;
             margin-top: 2rem;
         }
@@ -686,6 +687,10 @@
             .filter-btn {
                 font-size: 0.75rem;
             }
+
+            .contact-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
@@ -711,8 +716,6 @@
     <!-- Hero Section -->
     <section class="hero">
         <div class="hero-left">
-            <div class="brand-mark mono">NICOLAS</div>
-
             <div class="hero-content">
                 <h1>PRIVATE STAYS<br>AROUND TROGIR</h1>
                 <p class="hero-tagline">Collection of carefully selected properties</p>
