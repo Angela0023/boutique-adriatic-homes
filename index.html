@@ -84,10 +84,12 @@
             background: none;
             border: none;
             cursor: pointer;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
+            padding: 0.5rem;
+            display: block;
+            font-size: 2rem;
+            color: var(--black);
+            z-index: 1001;
+            position: relative;
         }
 
         .menu-toggle span {
@@ -162,6 +164,8 @@
             transition: all 0.3s;
             border: 2px solid var(--black);
             border-radius: 50px;
+            position: relative;
+            z-index: 1001;
         }
 
         .btn-primary:hover {
@@ -607,24 +611,45 @@
             opacity: 0.5;
         }
 
+        /* Navigation Container */
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-logo {
+            font-size: 1rem;
+            font-weight: 600;
+            letter-spacing: 0.2em;
+            pointer-events: none;
+        }
+
         /* Mobile Menu */
         .mobile-menu {
-            position: fixed;
-            top: 80px;
-            left: 0;
-            right: 0;
+            position: absolute;
+            top: 100%;
+            left: 4%;
             background: var(--white);
-            padding: 2rem;
-            transform: translateY(-100%);
+            padding: 1.5rem;
+            transform: translateY(-20px);
             opacity: 0;
-            transition: all 0.3s;
+            pointer-events: none;
+            transition: all 0.3s ease;
             z-index: 999;
             box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            min-width: 200px;
+            border: 1px solid #e0e0e0;
         }
 
         .mobile-menu.open {
             transform: translateY(0);
             opacity: 1;
+            pointer-events: auto;
         }
 
         .mobile-menu a {
@@ -697,21 +722,20 @@
 <body>
     <!-- Navigation -->
     <nav>
-        <button class="menu-toggle" id="menuToggle" aria-label="Toggle menu">
-            <span></span>
-            <span></span>
-            <span></span>
-        </button>
-        <a href="#properties" class="login-btn">Book Now</a>
+        <div class="nav-container">
+            <button class="menu-toggle" id="menuToggle" aria-label="Toggle menu">
+                ☰
+            </button>
+            <div class="nav-logo">NICOLAS</div>
+            <div class="mobile-menu" id="mobileMenu">
+                <a href="#properties">Properties</a>
+                <a href="#services">Services</a>
+                <a href="#location">Location</a>
+                <a href="#contact">Contact</a>
+            </div>
+            <a href="#properties" class="btn-primary">Book Now</a>
+        </div>
     </nav>
-
-    <!-- Mobile Menu -->
-    <div class="mobile-menu" id="mobileMenu">
-        <a href="#properties">Properties</a>
-        <a href="#service">Our Service</a>
-        <a href="#location">Location</a>
-        <a href="#contact">Contact</a>
-    </div>
 
     <!-- Hero Section -->
     <section class="hero">
